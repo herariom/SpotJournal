@@ -4,4 +4,4 @@ entrypoint: gunicorn -b :$PORT main:app
 network:
   forwarded_ports:
     - 3306
-:python_version: 3
+python_version: 3
