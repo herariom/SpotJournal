@@ -21,34 +21,39 @@
       Chart.defaults.global.responsive = false;
 
       // define the chart data
+
+      var options = {
+        maintainAspectRatio: true,
+        scale: {
+            ticks: {
+                beginAtZero: true,
+                max: 10
+            }
+        }
+    };
+
       var chartData = {
+      type: 'radar',
         labels : [{% for item in labels %}
                    "{{item}}",
                   {% endfor %}],
-        datasets : [{
-            label: '{{ legend }}',
-            fill: true,
-            lineTension: 0.1,
-            backgroundColor: "rgba(75,192,192,0.4)",
-            borderColor: "rgba(75,192,192,1)",
-            borderCapStyle: 'butt',
-            borderDash: [],
-            borderDashOffset: 0.0,
+        datasets : [
+        {% for users in data %}
+        {
+            label: '{{ users.legend }}',
+            backgroundColor: "rgba({{ users.color_r }},{{ users.color_b }},{{ users.color_g }},0.4)",
+            borderColor: "rgba({{ users.color_r }},{{ users.color_b }},{{ users.color_g }},1)",
             borderJoinStyle: 'miter',
-            pointBorderColor: "rgba(75,192,192,1)",
+            pointBorderColor: "rgba({{ users.color_r }},{{ users.color_b }},{{ users.color_g }},1)",
             pointBackgroundColor: "#fff",
-            pointBorderWidth: 1,
-            pointHoverRadius: 5,
-            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBackgroundColor: "rgba({{ users.color_r }},{{ users.color_b }},{{ users.color_g }},1)",
             pointHoverBorderColor: "rgba(220,220,220,1)",
-            pointHoverBorderWidth: 2,
-            pointRadius: 1,
-            pointHitRadius: 10,
-            data : [{% for item in values %}
+            data : [{% for item in users.values %}
                       {{item}},
-                    {% endfor %}],
-            spanGaps: false
-        }]
+                    {% endfor %}]
+        },
+        {% endfor %}
+        ]
       }
 
       // get chart canvas
@@ -56,8 +61,9 @@
 
       // create the chart using the chart canvas
       var results = new Chart(ctx, {
-        type: 'line',
+        type: 'radar',
         data: chartData,
+        options: options
       });
 
 </script>
