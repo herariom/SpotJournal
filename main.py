@@ -61,7 +61,7 @@ try:
 
     with connection.cursor() as cursor:
         # Read a single record
-        sql = "SELECT `id`, `password` FROM `users` WHERE `email`=%s"
+        sql = "SELECT `password` FROM `users` WHERE `email`=%s"
         cursor.execute(sql, ('webmaster@python.org',))
         result = cursor.fetchone()
         print(result)
