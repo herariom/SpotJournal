@@ -1,5 +1,9 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for, request
 import os
+
+from werkzeug.utils import redirect
+
+from forms import ContactForm
 
 app = Flask(__name__)
 
@@ -13,9 +17,20 @@ def result():
     return render_template('results.html', values=values, labels=labels, legend=legend)
 
 
-@app.route('/')
+@app.route('/success', methods=('GET', 'POST'))
+def success():
+    return render_template('results.html')
+
+
+@app.route('/', methods=('GET', 'POST'))
 def index():
-    return render_template('index.html')
+
+    form = ContactForm()
+
+    if request.method == 'POST' and form.validate():
+        return redirect(url_for('success'))
+
+    return render_template('index.html', form=form)
 
 
 if __name__ == "__main__":
