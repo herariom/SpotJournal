@@ -50,8 +50,8 @@ connection = pymysql.connect(host='10.43.112.2',
 try:
     with connection.cursor() as cursor:
         # Create a new record
-        sql = "CREATE TABLE `users` (`email` VARCHAR(20), `password` VARCHAR(20))"
-        cursor.execute(sql)
+        # sql = "CREATE TABLE `users` (`email` VARCHAR(20), `password` VARCHAR(20))"
+        # cursor.execute(sql)
         sql = "INSERT INTO `users` (`email`, `password`) VALUES (%s, %s)"
         cursor.execute(sql, ('webmaster@python.org', 'very-secret'))
 
