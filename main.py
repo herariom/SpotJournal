@@ -126,7 +126,8 @@ def questionnaire():
     form = ContactForm()
 
     if request.method == 'POST' and form.validate_on_submit():
-        url = get_random_song() # NEED TO GET USER SONGS FROM DATABASE AND PASS IN
+        [oauth, sp] = get_spotipy_objs()
+        url = get_random_song(db.get_user_songs(sp.current_user()['id']))
         resp = make_response(render_template('listen.html', state='completed', url=url))
         resp.set_cookie('prevEmotion', form.current_emotion.data)
         return resp
