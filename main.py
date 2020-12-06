@@ -8,6 +8,7 @@ from forms import ContactForm, FinishedForm
 import pymysql.cursors
 
 from song_data import SongData
+from sql import SpotSQL
 
 import spotipy, random, json, requests, string
 from spotipy.oauth2 import SpotifyOAuth
@@ -24,6 +25,8 @@ app.config['SECRET_KEY'] = sess_key
 app.config['WTF_CSRF_ENABLED'] = False
 
 labels = ["Happy", "Excited", "Calm", "Sad", "Stressed", "Angry"]
+
+db = SpotSQL()
 
 
 # def generate_chart():
@@ -43,13 +46,7 @@ labels = ["Happy", "Excited", "Calm", "Sad", "Stressed", "Angry"]
 def get_random_song(past_songs = []):
   # past_songs: parameter list that contains names of all songs already chosen for user before
 
-  letters = string.ascii_lowercase
-  random_string = ''.join(random.choice(letters) for i in range(10))
-  sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="ca077b4c1b6b4ea7a33ed0069ec3eecb",
-                client_secret="2d2baf7aa1ff4c9792822aefac0ef7e5",
-                          redirect_uri="https://favorable-mark-297715.uc.r.appspot.com/form/before",
-                          state = random_string,
-                          scope="user-read-recently-played user-modify-playback-state user-read-private"))
+  [oauth, sp] = get_spotipy_objs()
   results = sp.current_user_recently_played(limit=50) # Dictionary of user's recently played tracks (@https://developer.spotify.com/console/get-recently-played/)
   user_id = sp.current_user()['id'] # Unique ID of Spotify User
   all_tracks = [] # Stores list of all the recently played tracks 
@@ -66,6 +63,7 @@ def get_random_song(past_songs = []):
   random_song = random.choice(all_tracks)
   while random_song in past_songs:
     random_song = random.choice(all_tracks)
+  db.add_song(random_song)  # add song to database
   random_song += " music video"
 
   def findYTLink(search):
@@ -89,6 +87,26 @@ def get_random_song(past_songs = []):
     url_id = result['search_result'][0]['id']
   return "https://www.youtube.com/embed/" + url_id
 
+def get_spotipy_objs():
+  letters = string.ascii_lowercase
+  random_string = ''.join(random.choice(letters) for i in range(10))
+  oauth = SpotifyOAuth(client_id="ca077b4c1b6b4ea7a33ed0069ec3eecb",
+                client_secret="2d2baf7aa1ff4c9792822aefac0ef7e5",
+                          redirect_uri="https://favorable-mark-297715.uc.r.appspot.com/form/",
+                          state = random_string,
+                          scope="user-read-recently-played user-modify-playback-state user-read-private",
+                          cache_path=None)
+
+  token_dict = oauth.get_cached_token()
+  token = token_dict['access_token']
+  refresh_token = token_dict['refresh_token']
+  if oauth.is_token_expired(token_dict):
+    oauth.refresh_access_token(refresh_token)
+
+  sp = spotipy.Spotify(auth_manager=oauth)
+
+  return [oauth, sp]
+
 @app.route('/success', methods=('GET', 'POST'))
 def success():
     return render_template('listen.html', url=url)
@@ -108,7 +126,7 @@ def questionnaire():
     form = ContactForm()
 
     if request.method == 'POST' and form.validate_on_submit():
-        url = get_random_song()
+        url = get_random_song() # NEED TO GET USER SONGS FROM DATABASE AND PASS IN
         resp = make_response(render_template('listen.html', state='completed', url=url))
         resp.set_cookie('prevEmotion', form.current_emotion.data)
         return resp
@@ -123,21 +141,10 @@ def questionnaire():
 @app.route('/spotify', methods=('GET', 'POST'))
 def spotify():
     
-    letters = string.ascii_lowercase
-    random_string = ''.join(random.choice(letters) for i in range(10))
-    oauth = SpotifyOAuth(client_id="ca077b4c1b6b4ea7a33ed0069ec3eecb",
-                client_secret="2d2baf7aa1ff4c9792822aefac0ef7e5",
-                          redirect_uri="https://favorable-mark-297715.uc.r.appspot.com/form/",
-                          state = random_string,
-                          scope="user-read-recently-played user-modify-playback-state user-read-private",
-                          cache_path=None)
-    
-    token_dict = oauth.get_cached_token()
-    token = token_dict['access_token']
-    refresh_token = token_dict['refresh_token']
-    if oauth.is_token_expired(token_dict):
-      oauth.refresh_access_token(refresh_token)
-    
+    [oauth, sp] = get_spotipy_objs()
+    user_id = sp.current_user()['id'] # Unique ID of Spotify User
+    db.add_user(user_id)
+
     return redirect(url_for('questionnaire'))
 
 @app.route('/', methods=('GET', 'POST'))
