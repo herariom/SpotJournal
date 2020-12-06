@@ -1,12 +1,12 @@
 from flask import Flask, render_template, url_for, request
 import os
-from random import randrange
+# from random import randrange
 from werkzeug.utils import redirect
 
 from forms import ContactForm
 import pymysql.cursors
 
-from song_data import SongData
+# from song_data import SongData
 
 app = Flask(__name__)
 
