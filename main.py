@@ -1,21 +1,30 @@
 from flask import Flask, render_template, url_for, request
 import os
-
+from random import randrange
 from werkzeug.utils import redirect
 
 from forms import ContactForm
 import pymysql.cursors
+
+from song_data import SongData
 
 app = Flask(__name__)
 
 
 @app.route('/results')
 def result():
-    legend = 'Monthly Data'
-    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
-    values = [10, 9, 8, 7, 6, 4, 7, 8]
+    labels = ["Angry", "Happy", "Sad", "Scared", "Confused"]
 
-    return render_template('results.html', values=values, labels=labels, legend=legend)
+    testdata = []
+
+    user_values = [randrange(10), randrange(10), randrange(10), randrange(10), randrange(10)]
+    print(user_values)
+    testdata.append(SongData('Your Emotions', user_values, 220, 0, 0))
+
+    for x in range(1, 10):
+        testdata.append(SongData(('User ' + str(x)), [randrange(10), randrange(10), randrange(10), randrange(10), randrange(10)], randrange(30, 255, 5), randrange(30, 255, 5), randrange(30, 255, 5)))
+
+    return render_template('results.html', data=testdata, labels=labels)
 
 
 @app.route('/success', methods=('GET', 'POST'))
