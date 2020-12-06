@@ -18,8 +18,11 @@ class ContactForm(FlaskForm):
         [DataRequired()],
         choices=[
             ('Happy', 'happy'),
+            ('Excited', 'excited'),
+            ('Calm', 'calm'),
             ('Sad', 'sad'),
-            ('Unsure', 'unsure')
+            ('Stressed', 'stressed'),
+            ('Angry', 'angry')
         ]
     )
     emotion_explanation = StringField(
