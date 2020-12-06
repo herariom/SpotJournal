@@ -86,4 +86,4 @@ def spotify():
     [oauth, sp] = get_spotipy_objs()
     user_id = sp.current_user()['id'] # Unique ID of Spotify User
     db.add_user(user_id)
-    db.connect.close()
+    db.connection.close()

@@ -4,7 +4,7 @@ from random import randrange
 from werkzeug.utils import redirect
 
 from chart import generate_chart
-from forms import ContactForm, FinishedForm
+from forms import ContactForm, FinishedForm, DateForm
 import pymysql.cursors
 
 from song_data import SongData
@@ -26,6 +26,21 @@ app.config['WTF_CSRF_ENABLED'] = False
 labels = ["Happy", "Excited", "Calm", "Sad", "Stressed", "Angry"]
 
 db = SpotSQL()
+
+
+@app.route('/journal', methods=('GET', 'POST'))
+def journal():
+    form = DateForm()
+
+    if request.method == 'POST' and form.validate_on_submit():
+
+        spot = SpotSQL()
+        data = spot.get_user_songs(sp.get_user_id())
+
+        return render_template('journal.html', data=generate_chart(request.cookies.get('prevEmotion')), labels=labels)
+
+
+    return render_template('journal.html')
 
 
 @app.route('/success', methods=('GET', 'POST'))
