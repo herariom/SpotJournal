@@ -10,6 +10,13 @@ from song_data import SongData
 
 app = Flask(__name__)
 
+sess_key = os.urandom(32)
+
+# Generate session key
+app.secret_key = sess_key
+
+app.config['SECRET_KEY'] = sess_key
+
 
 @app.route('/results')
 def result():
@@ -44,12 +51,4 @@ def index():
 
 
 if __name__ == "__main__":
-
-    sess_key = os.urandom(24)
-
-    # Generate session key
-    app.secret_key = sess_key
-
-    app.config['SECRET_KEY'] = sess_key
-
     app.run()
