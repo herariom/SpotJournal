@@ -6,7 +6,6 @@ from song_data import SongData
 from sql import SpotSQL
 
 current_song = ""
-current_user_id = ""
 
 def get_spotipy_objs():
   # Returns two list array with ouath and sp object
@@ -54,15 +53,10 @@ def get_random_song(past_songs = []):
 def get_song_name():
   return current_song
 
-def get_user_id(): 
-  # Returns user's unique Spotify ID
-  #[oauth, sp] = get_spotipy_objs()
-  #results = sp.current_user_recently_played(limit=50) # Dictionary of user's recently played tracks (@https://developer.spotify.com/console/get-recently-played/)
-  #user_id = sp.current_user()['id'] 
-  return current_user_id
-
 def findYTLink(search):
     # Function returns a YouTube ID/Link of the random_song in String datatype.
+
+    db = SpotSQL()
     words = search.split()
     api_key = "AIzaSyAvE4oj4Wb-UttuV4T6cf_zSi7mnw-ewuo"
     json_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" + "+".join(words) + "&type=video&key=" + api_key
@@ -73,12 +67,16 @@ def findYTLink(search):
 
     # If the youtubesearch python module fails e.g search.result() returns an empty string
     # Then, use findYTLink to parse link using YouTube Data API v3
-    search = SearchVideos(random_song, offset = 1, mode = "json", max_results = 1)
+    [oauth, sp] = get_spotipy_objs()
+    user_id = sp.current_user()['id']
+    print('searching')
+    search = SearchVideos(current_song, offset = 1, mode = "json", max_results = 1)
     if search.result() == None:
         url_id = yt_id
     else:
         result = json.loads(search.result())
         url_id = result['search_result'][0]['id']
+    db.connection.close()
     return "https://www.youtube.com/embed/" + url_id
 
 def spotify():
