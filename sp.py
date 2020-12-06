@@ -68,7 +68,6 @@ def findYTLink(search):
     json_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" + "+".join(words) + "&type=video&key=" + api_key
     json_data = json.loads(requests.get(json_url).text)
     yt_id = json_data['items'][0]['id']['videoId']
-    return yt_id
     #yt_link = "https://www.youtube.com/watch?v=" + yt_id
     #return yt_link
 
@@ -76,7 +75,7 @@ def findYTLink(search):
     # Then, use findYTLink to parse link using YouTube Data API v3
     search = SearchVideos(random_song, offset = 1, mode = "json", max_results = 1)
     if search.result() == None:
-        url_id = findYTLink(random_song)
+        url_id = yt_id
     else:
         result = json.loads(search.result())
         url_id = result['search_result'][0]['id']
