@@ -2,13 +2,10 @@ import pymysql.cursors
 import unittest
 from datetime import date
 
-
-
-
 class SpotSQL:
     # move values to another file...
     def __init__(self):
-        self.connection = pymysql.connect(host='35.192.22.154',
+        self.connection = pymysql.connect(host='10.43.112.2',
                                           user='root',
                                           password='test',
                                           db=None,
@@ -43,14 +40,11 @@ class SpotSQL:
     def get_user_entry(self, tdate, username):
         self.connection.select_db('users')
         with self.connection.cursor() as cursor:
-            print(username)
-            print(tdate)
 
             sql = "SELECT * FROM `%s` WHERE date=%s"
             cursor.execute(sql, (username, tdate,))
 
-
-            return cursor.fetchall()
+            return cursor.fetchone()
 
     def add_song(self, song):
         self.connection.select_db('songs')
@@ -58,9 +52,8 @@ class SpotSQL:
             sql = "SHOW TABLES"
             cursor.execute(sql)
             result = cursor.fetchall()
-            print(result)
+
             for x in result:
-                print(x)
                 if x.get('Tables_in_songs') == "'" + song + "'":
                     return
 
@@ -82,7 +75,7 @@ class SpotSQL:
         with self.connection.cursor() as cursor:
             sql = "SELECT emotion FROM `%s`"
             cursor.execute(sql, (song,))
-            return cursor.fetchall()
+            return cursor.fetchone()
 
     def get_user_songs(self, username):
         self.connection.select_db('users')
@@ -116,10 +109,8 @@ class TestSQLMethods(unittest.TestCase):
         self.db.add_song(self.s_data1[0])
         self.db.add_emotion(self.s_data1[0], self.s_data1[1])
 
-        #self.assertEqual(self.db.get_user_entry(date.today(), self.u_data1.get('username')), 'thisiswrong')
-        print(self.db.get_user_entry(date.today(), self.u_data1.get('username')))
-        #self.assertEqual(self.db.get_songs_emotes(self.s_data1[0]), ['happy'])
-        print(self.db.get_songs_emotes(self.s_data1[0]))
+        self.assertEqual(self.db.get_user_entry(date.today(), self.u_data1.get('username')), [{'date': datetime.date(2020, 12, 6), 'q1': 'answer', 'q2': 'answer', 'q3': 'answer', 'q4': 'answer', 'song': 'fun song', 'emotion': 'happy', 'token': 'asdfg'}])
+        self.assertEqual(self.db.get_songs_emotes(self.s_data1[0]), [{'emotion': 'happy'}])
 
 test = TestSQLMethods()
 test.test_add1()
