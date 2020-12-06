@@ -34,3 +34,35 @@ class ContactForm(FlaskForm):
         ]
     )
     submit = SubmitField('Submit')
+
+class PostForm(FlaskForm):
+    """Contact form."""
+    current_day = StringField(
+        'How are you feeling after listening to the song?',
+        [
+            DataRequired(),
+            Length(min=4,
+                   message='Your message is too short.')
+        ]
+    )
+    current_emotion = SelectField(
+        'What emotion are you feeling at the moment',
+        [DataRequired()],
+        choices=[
+            ('Happy', 'happy'),
+            ('Excited', 'excited'),
+            ('Calm', 'calm'),
+            ('Sad', 'sad'),
+            ('Stressed', 'stressed'),
+            ('Angry', 'angry')
+        ]
+    )
+    emotion_explanation = StringField(
+        'Why are you feeling this way?',
+        [
+            DataRequired(),
+            Length(min=4,
+                   message='Your message is too short.')
+        ]
+    )
+    submit = SubmitField('Submit')
