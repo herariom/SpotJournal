@@ -13,7 +13,7 @@
     <h1>Listen to the song</h1>
 
     <div style="width: 560px; height: 315px">
-  <!-- <embed
+  <embed
     src="{{ url }}"
     wmode="transparent"
     type="video/mp4"
@@ -21,13 +21,7 @@
     allow="autoplay; encrypted-media; picture-in-picture"
     allowfullscreen
     title="Song"
-  > 
-  -->
-  <iframe width="560" height="315" 
-    src="{{ url }}" 
-    frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-    allowfullscreen></iframe>
+  >
 </div>
 <a href="{{ url_for('finished') }}" class="btn btn-primary mt-2">Finished Listening</a>
 

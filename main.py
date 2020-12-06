@@ -67,7 +67,6 @@ def get_random_song(past_songs = []):
   while random_song in past_songs:
     random_song = random.choice(all_tracks)
   random_song += " music video"
-  print("song: "+random_song)
 
   def findYTLink(search):
     # Function returns a YouTube link of the random_song in String datatype.
@@ -128,7 +127,7 @@ def spotify():
     random_string = ''.join(random.choice(letters) for i in range(10))
     oauth = SpotifyOAuth(client_id="ca077b4c1b6b4ea7a33ed0069ec3eecb",
                 client_secret="2d2baf7aa1ff4c9792822aefac0ef7e5",
-                          redirect_uri="http://127.0.0.1:5000/form/before",
+                          redirect_uri="https://favorable-mark-297715.uc.r.appspot.com/form/",
                           state = random_string,
                           scope="user-read-recently-played user-modify-playback-state user-read-private",
                           cache_path=None)
