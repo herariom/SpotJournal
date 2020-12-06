@@ -57,7 +57,7 @@
       </form>
 
     {% if form.errors %}
-        failed validation
+        {{ form.errors }}
     {% endif %}
     {% endblock %}
   </div>

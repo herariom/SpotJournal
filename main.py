@@ -21,6 +21,7 @@ sess_key = os.urandom(32)
 app.secret_key = sess_key
 
 app.config['SECRET_KEY'] = sess_key
+app.config['WTF_CSRF_ENABLED'] = False
 
 labels = ["Happy", "Excited", "Calm", "Sad", "Stressed", "Angry"]
 
