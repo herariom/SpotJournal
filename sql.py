@@ -75,15 +75,22 @@ class SpotSQL:
         with self.connection.cursor() as cursor:
             sql = "SELECT emotion FROM `%s`"
             cursor.execute(sql, (song,))
-            return cursor.fetchone()
+            return self.result_to_list(cursor.fetchall())
 
     def get_user_songs(self, username):
         self.connection.select_db('users')
         with self.connection.cursor() as cursor:
             sql = "SELECT songs FROM `%s`"
             cursor.execute(sql, (username,))
-            return cursor.fetchall()
+            return self.result_to_list(cursor.fetchall())
 
+    def result_to_list(self, result):
+        list = []
+        for x in result:
+            for (k, v) in x.items():
+                list.append(v)
+        
+        return list
 
 class TestSQLMethods(unittest.TestCase):
 
@@ -109,8 +116,8 @@ class TestSQLMethods(unittest.TestCase):
         self.db.add_song(self.s_data1[0])
         self.db.add_emotion(self.s_data1[0], self.s_data1[1])
 
-        self.assertEqual(self.db.get_user_entry(date.today(), self.u_data1.get('username')), [{'date': datetime.date(2020, 12, 6), 'q1': 'answer', 'q2': 'answer', 'q3': 'answer', 'q4': 'answer', 'song': 'fun song', 'emotion': 'happy', 'token': 'asdfg'}])
-        self.assertEqual(self.db.get_songs_emotes(self.s_data1[0]), [{'emotion': 'happy'}])
+        self.assertEqual(self.db.get_user_entry(date.today(), self.u_data1.get('username')), [{'date': date.today(), 'q1': 'answer', 'q2': 'answer', 'q3': 'answer', 'q4': 'answer', 'song': 'fun song', 'emotion': 'happy', 'token': 'asdfg'}])
+        self.assertEqual(self.db.get_songs_emotes(self.s_data1[0]), ['happy'])
 
 test = TestSQLMethods()
 test.test_add1()
