@@ -2,6 +2,7 @@ from flask_wtf import Form, RecaptchaField, FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Length, Email
 
+from wtforms.fields.html5 import DateField
 
 class ContactForm(FlaskForm):
     """Contact form."""
@@ -55,4 +56,10 @@ class FinishedForm(FlaskForm):
                    message='Your message is too short.')
         ]
     )
+    submit = SubmitField('Submit')
+
+
+## Date picker
+class DateForm(FlaskForm):
+    dt = DateField('DatePicker', format='%Y-%m-%d')
     submit = SubmitField('Submit')
