@@ -40,7 +40,9 @@ labels = ["Happy", "Excited", "Calm", "Sad", "Stressed", "Angry"]
 #
 #     return render_template('results.html', data=testdata, labels=labels)
 
-def get_random_song():
+def get_random_song(past_songs = []):
+  # past_songs: parameter list that contains names of all songs already chosen for user before
+
   letters = string.ascii_lowercase
   random_string = ''.join(random.choice(letters) for i in range(10))
   sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="ca077b4c1b6b4ea7a33ed0069ec3eecb",
@@ -59,8 +61,13 @@ def get_random_song():
   # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   for item in results['items']:
       track = item['track']
-      all_tracks.append(track['name']+ ' - ' +track['artists'][0]['name'])
+      #all_tracks.append(track['name']+ ' - ' +track['artists'][0]['name'])
+      all_tracks.append(track['name'])
   random_song = random.choice(all_tracks)
+  while random_song in past_songs:
+    random_song = random.choice(all_tracks)
+  random_song += " music video"
+  print("song: "+random_song)
 
   def findYTLink(search):
     # Function returns a YouTube link of the random_song in String datatype.
@@ -86,21 +93,7 @@ def get_random_song():
 @app.route('/success', methods=('GET', 'POST'))
 def success():
     return render_template('listen.html', url=url)
-'''
-@app.route('/form/finished', methods=('GET', 'POST'))
-def post_questionnaire():
-  form = PostForm()
 
-  if request.method == 'POST' and form.validate_on_submit():
-        if state == 'finished':
-
-            return render_template('results.html', data=generate_chart(request.cookies.get('prevEmotion'), form.current_emotion.data), labels=labels)
-        else:
-            url = get_random_song()
-            resp = make_response(render_template('listen.html', url=url))
-            resp.set_cookie('prevEmotion', form.current_emotion.data)
-            return resp
-'''
 @app.route('/finished', methods=('GET', 'POST'))
 def finished():
     form = FinishedForm()
@@ -139,13 +132,13 @@ def spotify():
                           state = random_string,
                           scope="user-read-recently-played user-modify-playback-state user-read-private",
                           cache_path=None)
-    '''
-    token = oauth.get_cached_token()
-    print("token: "+token)
-    refresh_token = token['refresh_token']
-    if oauth.is_token_expired(token):
+    
+    token_dict = oauth.get_cached_token()
+    token = token_dict['access_token']
+    refresh_token = token_dict['refresh_token']
+    if oauth.is_token_expired(token_dict):
       oauth.refresh_access_token(refresh_token)
-    '''
+    
     return redirect(url_for('questionnaire'))
 
 @app.route('/', methods=('GET', 'POST'))
