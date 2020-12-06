@@ -9,6 +9,10 @@ import pymysql.cursors
 
 from song_data import SongData
 
+import spotipy, random, json, requests, string
+from spotipy.oauth2 import SpotifyOAuth
+from youtubesearchpython import SearchVideos
+
 app = Flask(__name__)
 
 sess_key = os.urandom(32)
@@ -36,11 +40,58 @@ labels = ["Happy", "Excited", "Calm", "Sad", "Stressed", "Angry"]
 #
 #     return render_template('results.html', data=testdata, labels=labels)
 
+def get_random_song(past_songs = []):
+  # past_songs: parameter list that contains names of all songs already chosen for user before
+
+  letters = string.ascii_lowercase
+  random_string = ''.join(random.choice(letters) for i in range(10))
+  sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="ca077b4c1b6b4ea7a33ed0069ec3eecb",
+                client_secret="2d2baf7aa1ff4c9792822aefac0ef7e5",
+                          redirect_uri="https://favorable-mark-297715.uc.r.appspot.com/form/before",
+                          state = random_string,
+                          scope="user-read-recently-played user-modify-playback-state user-read-private"))
+  results = sp.current_user_recently_played(limit=50) # Dictionary of user's recently played tracks (@https://developer.spotify.com/console/get-recently-played/)
+  user_id = sp.current_user()['id'] # Unique ID of Spotify User
+  all_tracks = [] # Stores list of all the recently played tracks 
+
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  # Make sure to create if condition that will repeat random selection if #
+  # randomly selected song has already been played -> check database using#
+  # unique user id and then check if it's in the list                     #
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  for item in results['items']:
+      track = item['track']
+      #all_tracks.append(track['name']+ ' - ' +track['artists'][0]['name'])
+      all_tracks.append(track['name'])
+  random_song = random.choice(all_tracks)
+  while random_song in past_songs:
+    random_song = random.choice(all_tracks)
+  random_song += " music video"
+
+  def findYTLink(search):
+    # Function returns a YouTube link of the random_song in String datatype.
+    words = search.split()
+    api_key = "AIzaSyAvE4oj4Wb-UttuV4T6cf_zSi7mnw-ewuo"
+    json_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" + "+".join(words) + "&type=video&key=" + api_key
+    json_data = json.loads(requests.get(json_url).text)
+    yt_id = json_data['items'][0]['id']['videoId']
+    return yt_id
+    #yt_link = "https://www.youtube.com/watch?v=" + yt_id
+    #return yt_link
+
+  # If the youtubesearch python module fails e.g search.result() returns an empty string
+  # Then, use findYTLink to parse link using YouTube Data API v3
+  search = SearchVideos(random_song, offset = 1, mode = "json", max_results = 1)
+  if search.result() == None:
+    url_id = findYTLink(random_song)
+  else:
+    result = json.loads(search.result())
+    url_id = result['search_result'][0]['id']
+  return "https://www.youtube.com/embed/" + url_id
 
 @app.route('/success', methods=('GET', 'POST'))
 def success():
-    return render_template('listen.html')
-
+    return render_template('listen.html', url=url)
 
 @app.route('/finished', methods=('GET', 'POST'))
 def finished():
@@ -57,7 +108,8 @@ def questionnaire():
     form = ContactForm()
 
     if request.method == 'POST' and form.validate_on_submit():
-        resp = make_response(render_template('listen.html', state='completed'))
+        url = get_random_song()
+        resp = make_response(render_template('listen.html', state='completed', url=url))
         resp.set_cookie('prevEmotion', form.current_emotion.data)
         return resp
 
@@ -68,6 +120,25 @@ def questionnaire():
 
     return render_template('form.html', form=form)
 
+@app.route('/spotify', methods=('GET', 'POST'))
+def spotify():
+    
+    letters = string.ascii_lowercase
+    random_string = ''.join(random.choice(letters) for i in range(10))
+    oauth = SpotifyOAuth(client_id="ca077b4c1b6b4ea7a33ed0069ec3eecb",
+                client_secret="2d2baf7aa1ff4c9792822aefac0ef7e5",
+                          redirect_uri="https://favorable-mark-297715.uc.r.appspot.com/form/",
+                          state = random_string,
+                          scope="user-read-recently-played user-modify-playback-state user-read-private",
+                          cache_path=None)
+    
+    token_dict = oauth.get_cached_token()
+    token = token_dict['access_token']
+    refresh_token = token_dict['refresh_token']
+    if oauth.is_token_expired(token_dict):
+      oauth.refresh_access_token(refresh_token)
+    
+    return redirect(url_for('questionnaire'))
 
 @app.route('/', methods=('GET', 'POST'))
 def index():
