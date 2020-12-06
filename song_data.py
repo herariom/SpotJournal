@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 @dataclass
 class SongData():
     legend: str
