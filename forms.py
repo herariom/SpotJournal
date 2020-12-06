@@ -17,16 +17,38 @@ class ContactForm(FlaskForm):
         'What emotion are you feeling at the moment',
         [DataRequired()],
         choices=[
-            ('Happy', 'happy'),
-            ('Excited', 'excited'),
-            ('Calm', 'calm'),
-            ('Sad', 'sad'),
-            ('Stressed', 'stressed'),
-            ('Angry', 'angry')
+            ('Happy', 'Happy'),
+            ('Excited', 'Excited'),
+            ('Calm', 'Calm'),
+            ('Sad', 'Sad'),
+            ('Stressed', 'Stressed'),
+            ('Angry', 'Angry')
         ]
     )
     emotion_explanation = StringField(
         'Why are you feeling this way?',
+        [
+            DataRequired(),
+            Length(min=4,
+                   message='Your message is too short.')
+        ]
+    )
+    submit = SubmitField('Submit')
+
+
+class FinishedForm(FlaskForm):
+    """Second questionnaire."""
+    emotion_response = SelectField(
+        'Did the song make you feel better, neutral, or worse?',
+        [DataRequired()],
+        choices=[
+            ('Better', 'Better'),
+            ('Neutral', 'Neutral'),
+            ('Worse', 'Worse')
+        ]
+    )
+    emotion_conveyed = StringField(
+        'What emotion does this song convey to you?',
         [
             DataRequired(),
             Length(min=4,

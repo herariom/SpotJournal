@@ -4,7 +4,7 @@ from random import randrange
 from werkzeug.utils import redirect
 
 from chart import generate_chart
-from forms import ContactForm
+from forms import ContactForm, FinishedForm
 import pymysql.cursors
 
 from song_data import SongData
@@ -42,20 +42,31 @@ def success():
     return render_template('listen.html')
 
 
-@app.route('/form/<state>', methods=('GET', 'POST'))
-def questionnaire(state):
+@app.route('/finished', methods=('GET', 'POST'))
+def finished():
+    form = FinishedForm()
+
+    if request.method == 'POST' and form.validate_on_submit():
+        return render_template('results.html', data=generate_chart(request.cookies.get('prevEmotion')), labels=labels)
+
+    return render_template('finished.html', form=form)
+
+
+@app.route('/form', methods=('GET', 'POST'))
+def questionnaire():
     form = ContactForm()
 
     if request.method == 'POST' and form.validate_on_submit():
-        if state == 'finished':
+        resp = make_response(render_template('listen.html', state='completed'))
+        resp.set_cookie('prevEmotion', form.current_emotion.data)
+        return resp
 
-            return render_template('results.html', data=generate_chart(request.cookies.get('prevEmotion'), form.current_emotion.data), labels=labels)
-        else:
-            resp = make_response(render_template('listen.html'))
-            resp.set_cookie('prevEmotion', form.current_emotion.data)
-            return resp
+        #if state == 'finished':
 
-    return render_template('form.html', state=state, form=form)
+            #return render_template('results.html', data=generate_chart(request.cookies.get('prevEmotion'), form.current_emotion.data), labels=labels)
+        #else:
+
+    return render_template('form.html', form=form)
 
 
 @app.route('/', methods=('GET', 'POST'))

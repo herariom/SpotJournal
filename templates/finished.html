@@ -14,15 +14,16 @@
 
   <div class="formwrapper text-center align-items-center">
     {% block content %}
-    <form method="POST" action="/form">
+    <form method="POST" action="/finished">
       {{ form.csrf_token }}
+
       <fieldset class="form-field">
-      {{ form.current_day.label }}
+      {{ form.emotion_response.label }}
         <br>
-      {{ form.current_day }}
-        {% if form.current_day.errors %}
+      {{ form.emotion_response }}
+        {% if form.emotion_response.errors %}
         <ul class="errors">
-          {% for error in form.current_day.errors %}
+          {% for error in form.emotion_response.errors %}
           <li>{{ error }}</li>
           {% endfor %}
         </ul>
@@ -30,31 +31,17 @@
       </fieldset>
 
       <fieldset class="form-field">
-      {{ form.current_emotion.label }}
+        {{ form.emotion_conveyed.label }}
         <br>
-      {{ form.current_emotion }}
-        {% if form.current_emotion.errors %}
-        <ul class="errors">
-          {% for error in form.current_emotion.errors %}
-          <li>{{ error }}</li>
-          {% endfor %}
-        </ul>
-        {% endif %}
-      </fieldset>
-
-      <fieldset class="form-field">
-        {{ form.emotion_explanation.label }}
-        <br>
-        {{ form.emotion_explanation }}
-        {% if form.emotion_explanation.errors %}
+        {{ form.emotion_conveyed }}
+        {% if form.emotion_conveyed.errors %}
           <ul class="errors">
-            {% for error in form.emotion_explanation.errors %}
+            {% for error in form.emotion_conveyed.errors %}
             <li>{{ error }}</li>
             {% endfor %}
           </ul>
         {% endif %}
       </fieldset>
-
         <br>
       {{ form.submit(class_='btn btn-primary')}}
 
