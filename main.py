@@ -39,15 +39,20 @@ def success():
     return render_template('results.html')
 
 
-@app.route('/', methods=('GET', 'POST'))
-def index():
-
+@app.route('/form', methods=('GET', 'POST'))
+def questionnaire():
     form = ContactForm()
 
     if request.method == 'POST' and form.validate_on_submit():
         return redirect(url_for('success'))
 
-    return render_template('index.html', form=form)
+    return render_template('form.html', form=form)
+
+
+@app.route('/', methods=('GET', 'POST'))
+def index():
+
+    return render_template('index.html')
 
 
 if __name__ == "__main__":

@@ -10,61 +10,14 @@
 
 
 <div class="d-flex align-items-center justify-content-center flex-column" style="height: 350px">
+  <div class="w-50 text-center">
     <h1>Welcome to SpotJournal</h1>
-    <a href="{{ url_for('result') }}" class="btn btn-primary">View results</a>
 
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 
-
-  <div class="formwrapper">
-    <h2 class="title">Contact</h2>
-    {% block content %}
-    <form method="POST" action="/">
-      {{ form.csrf_token }}
-      <fieldset class="form-field">
-      {{ form.current_day.label }}
-      {{ form.current_day }}
-        {% if form.current_day.errors %}
-        <ul class="errors">
-          {% for error in form.current_day.errors %}
-          <li>{{ error }}</li>
-          {% endfor %}
-        </ul>
-        {% endif %}
-      </fieldset>
-
-      <fieldset class="form-field">
-      {{ form.current_emotion.label }}
-      {{ form.current_emotion }}
-        {% if form.current_emotion.errors %}
-        <ul class="errors">
-          {% for error in form.current_emotion.errors %}
-          <li>{{ error }}</li>
-          {% endfor %}
-        </ul>
-        {% endif %}
-      </fieldset>
-
-      <fieldset class="form-field">
-        {{ form.emotion_explanation.label }}
-        {{ form.emotion_explanation }}
-        {% if form.emotion_explanation.errors %}
-          <ul class="errors">
-            {% for error in form.emotion_explanation.errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </fieldset>
-
-      {{ form.submit }}
-
-      </form>
-
-    {% if form.errors %}
-        failed validation
-    {% endif %}
-    {% endblock %}
+    <a href="{{ url_for('questionnaire') }}" class="btn btn-primary w-50">Login</a>
   </div>
+</div>
 
 
 </div>
