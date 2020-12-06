@@ -27,9 +27,11 @@ labels = ["Happy", "Excited", "Calm", "Sad", "Stressed", "Angry"]
 
 db = SpotSQL()
 
+
 @app.route('/success', methods=('GET', 'POST'))
 def success():
-    return render_template('listen.html', url=url)
+    return render_template('listen.html')
+
 
 @app.route('/finished', methods=('GET', 'POST'))
 def finished():
@@ -47,7 +49,7 @@ def questionnaire():
 
     if request.method == 'POST' and form.validate_on_submit():
         [oauth, spot_obj] = sp.get_spotipy_objs()
-        url = get_random_song(db.get_user_songs(spot_obj.current_user()['id']))
+        url = sp.get_random_song(db.get_user_songs(spot_obj.current_user()['id']))
         resp = make_response(render_template('listen.html', state='completed', url=url))
         resp.set_cookie('prevEmotion', form.current_emotion.data)
         return resp
