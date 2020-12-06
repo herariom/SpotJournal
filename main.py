@@ -44,7 +44,7 @@ def index():
 
     form = ContactForm()
 
-    if request.method == 'POST' and form.validate():
+    if request.method == 'POST' and form.validate_on_submit():
         return redirect(url_for('success'))
 
     return render_template('index.html', form=form)

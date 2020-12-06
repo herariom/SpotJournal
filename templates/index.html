@@ -13,12 +13,13 @@
     <h1>Welcome to SpotJournal</h1>
     <a href="{{ url_for('result') }}" class="btn btn-primary">View results</a>
 
-    {% block content %}
+
 
   <div class="formwrapper">
     <h2 class="title">Contact</h2>
+    {% block content %}
     <form method="POST" action="/">
-
+      {{ form.csrf_token }}
       <fieldset class="form-field">
       {{ form.current_day.label }}
       {{ form.current_day }}
@@ -58,9 +59,13 @@
       {{ form.submit }}
 
       </form>
+
+    {% if form.errors %}
+        failed validation
+    {% endif %}
+    {% endblock %}
   </div>
 
-{% endblock %}
 
 </div>
 
