@@ -5,7 +5,7 @@ from datetime import date
 class SpotSQL:
     # move values to another file...
     def __init__(self):
-        self.connection = pymysql.connect(host='34.66.19.176',
+        self.connection = pymysql.connect(host='10.43.112.2',
                                           user='root',
                                           password='test',
                                           db=None,
